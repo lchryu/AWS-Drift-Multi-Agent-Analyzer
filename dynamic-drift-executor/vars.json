@@ -1,0 +1,41 @@
+{
+  "REGION": "us-east-1",
+  "INSTANCE_ID": "i-015ae62cdfc6305d9",
+  "AZ": "us-east-1f",
+  "ROOT_VOLUME_ID": "vol-06c998c32333fb9bd",
+  "ADDITIONAL_VOLUME_ID": "vol-0264e4e9a9b84999b",
+  "ENI_ID": "eni-00a5d819ac349be80",
+  "ENI_ATTACHMENT_ID": "eni-attach-0f8c9e2b0472a1b9c",
+  "SUBNET_ID": "subnet-0c4c2ff8756e7d1ef",
+  "DIFFERENT_SUBNET": "subnet-06f83f59997f620d3",
+  "SECURITY_GROUP": "sg-08c265e005176e74c",
+  "SG_1": "sg-08c265e005176e74c",
+  "SG_2": "sg-004e7904df29008d8",
+  "DIFFERENT_SG_ID": "sg-004e7904df29008d8",
+  "OPEN_SECURITY_GROUP": "sg-02bcd1bc9e18b93d3",
+  "RDP_OPEN_SG": "sg-021aed5a1ee153fb8",
+  "ALL_PORTS_OPEN_SG": "sg-04368c319629d6ec7",
+  "EIP_ALLOCATION_ID": "eipalloc-0c22f630a0a64f88d",
+  "EIP_ASSOCIATION_ID": "eipassoc-04ee6dd3699f87d3a",
+  "PLACEMENT_GROUP_NAME": "drift-pg-1773507460645",
+  "DIFFERENT_PLACEMENT_GROUP": "drift-pg-alt-1773507460645",
+  "__created": [
+    "RDP_OPEN_SG",
+    "ALL_PORTS_OPEN_SG",
+    "PLACEMENT_GROUP_NAME",
+    "DIFFERENT_PLACEMENT_GROUP",
+    "ADDITIONAL_VOLUME_ID",
+    "EIP_ALLOCATION_ID",
+    "EIP_ASSOCIATION_ID"
+  ],
+  "__missing": [
+    "ADMIN_PROFILE_ARN",
+    "ATTACHED_VOLUME_ID",
+    "IAM_ASSOCIATION_ID",
+    "NEW_AMI_ID",
+    "NEW_KERNEL_ID",
+    "NEW_RAMDISK_ID",
+    "RESERVATION_ID",
+    "TIMESTAMP"
+  ]
+}

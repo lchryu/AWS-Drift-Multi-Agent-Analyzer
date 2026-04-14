@@ -1,0 +1,22 @@
+{
+  "name": "ec2-drift-simulator",
+  "version": "2.0.0",
+  "description": "Dynamic EC2 drift simulator for testing CloudFormation drift detection",
+  "main": "dynamic-drift-executor.ts",
+  "scripts": {
+    "test-drift": "ts-node ec2-drift-simulator.ts",
+    "drift": "ts-node dynamic-drift-executor.ts",
+    "list": "ts-node dynamic-drift-executor.ts list",
+    "execute": "ts-node dynamic-drift-executor.ts execute",
+    "build": "tsc ec2-drift-simulator.ts"
+  },
+  "type": "module",
+  "dependencies": {
+    "@aws-sdk/client-ec2": "^3.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.37",
+    "ts-node": "^10.9.0",
+    "typescript": "^5.0.0"
+  }
+}

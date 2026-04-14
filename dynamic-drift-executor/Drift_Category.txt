@@ -1,0 +1,55 @@
+Resource: EC2Instance
+   Type: AWS::EC2::Instance
+   Physical ID: i-02921d7c833739352
+   Drift Status: MODIFIED
+   Expected Properties: {"ImageId":"ami-0e449927258d45bc4","InstanceType":"t3.micro","Tags":[{"Value":"My EC2 Instance","Key":"Name"},{"Value":"Training","Key":"Role"}]}
+   Actual Properties: {"ImageId":"ami-0e449927258d45bc4","InstanceType":"t3.micro","Tags":[{"Value":"Trainings","Key":"Role"},{"Value":"Test","Key":"User"},{"Value":"My EC2 Instance HEllo world","Key":"Name"}]}
+
+==========================================================
+const REGION = "us-east-1"
+const INSTANCE_ID = "i-02921d7c833739352"
+==========================================================
+
+
+Drift Category,Example,Severity,Explanation (Why it matters)
+EC2 Instance Deleted,EC2 instance terminated,🔴 High,"Results in immediate service outages and the potential for permanent, irreversible data loss."
+EC2 Instance Replaced,New Physical ID created,🔴 High,"Causes downtime and loss of instance attachments; CFN may lose ""ownership,"" making future updates fail."
+Security Group Opened,SSH 22 → 0.0.0.0/0,🔴 High,"Exposes EC2 instance to the public internet, creating an immediate and broad attack surface."
+IAM Instance Profile Changed,Instance profile removed or replaced,🔴 High,Breaks application permissions and access to AWS services; causes runtime failures.
+IAM Role Permission Expanded,Instance role policy with * access,🔴 High,Increases blast radius and risk of privilege escalation from compromised EC2 instance.
+Public IP Assigned,Private instance made public,🔴 High,Exposes previously internal instance to internet; bypasses network security controls.
+EBS Encryption Disabled,Root/data volume encryption off,🔴 High,Compromises data confidentiality; data becomes readable to unauthorized parties if a breach occurs.
+Detailed Monitoring Disabled,CloudWatch detailed monitoring off,🔴 High,Reduces visibility into instance performance and security; delays incident detection.
+Termination Protection Off,EC2 Protection toggled OFF,🔴 High,Leaves instance vulnerable to accidental termination via console or CLI errors.
+Source/Dest Check Disabled,Source destination check turned off,🔴 High,Allows instance to act as NAT/router; creates security risk if not intended for that purpose.
+User Data Modified,Launch script changed,🔴 High,Can inject malicious commands or alter instance initialization behavior on next reboot.
+Network Interface Detached,Primary or secondary ENI removed,🔴 High,Breaks network connectivity immediately; causes complete service unavailability.
+Subnet Changed,Instance moved to different subnet,🔴 High,Changes network routing and security posture; can break connectivity or expose services.
+Tenancy Changed,Dedicated to shared or vice versa,🔴 High,Impacts compliance requirements and can cause billing surprises or deployment failures.
+Metadata Service V1 Enabled,IMDSv2 downgraded to IMDSv1,🔴 High,Exposes instance to SSRF attacks; removes security protection from metadata access.
+Nitro Enclave Disabled,Enclave removed from instance,🔴 High,Removes hardware-based security isolation for sensitive workloads.
+Instance Size/Type Changed,t3.micro → t3.small,🟡 Moderate,Impacts cost and performance; can cause instability or outages under load during the next sync.
+AMI Changed,New EC2 AMI ID,🟡 Moderate,May introduce unpatched vulnerabilities or unexpected configuration changes not in the template.
+EBS Volume Attached/Detached,Additional volume added/removed,🟡 Moderate,Changes storage configuration; may break application expecting specific mount points.
+EBS Volume Size Changed,Volume expanded from 50GB to 100GB,🟡 Moderate,"Next deployment may try to ""shrink"" volume, which will fail and cause update errors."
+EBS Volume Type Changed,gp2 → gp3 or io1 → io2,🟡 Moderate,Impacts performance characteristics and cost; may affect application I/O patterns.
+EBS IOPS/Throughput Modified,Provisioned IOPS changed,🟡 Moderate,Affects disk performance; can cause application slowdowns or unexpected cost increases.
+Availability Zone Changed,Instance in different AZ,🟡 Moderate,Changes network latency and data transfer costs; may break AZ-specific routing or affinity.
+Placement Group Modified,Added to or removed from group,🟡 Moderate,Affects network performance between instances; can break high-performance computing workloads.
+Secondary Private IP Added,Additional IPs on ENI,🟡 Moderate,Changes network configuration; may confuse applications or break service discovery.
+Elastic IP Associated,EIP attached to instance,🟡 Moderate,Changes public IP address; breaks DNS if not updated and may impact whitelisting rules.
+Elastic IP Disassociated,EIP removed from instance,🟡 Moderate,Changes or removes public IP; causes connectivity loss for external clients.
+Security Group Modified,Different SG attached,🟡 Moderate,Changes firewall rules; can break legitimate traffic or inadvertently open ports.
+Credit Specification Changed,T-instance unlimited mode toggled,🟡 Moderate,Impacts burst behavior and cost; can lead to unexpected billing or performance throttling.
+Hibernation Enabled/Disabled,Hibernation option changed,🟡 Moderate,Affects instance stop behavior; may cause data loss if application expects hibernation.
+Monitoring Interval Changed,Basic to detailed or vice versa,🟡 Moderate,Affects metric granularity and cost; may miss performance issues with less frequent monitoring.
+Instance Metadata Options,Token usage or hop limit changed,🟡 Moderate,Changes metadata security posture; can break applications expecting different settings.
+Capacity Reservation,Added to or removed from reservation,🟡 Moderate,Affects billing and capacity guarantees; may impact disaster recovery capabilities.
+CPU Options Changed,Core/threads per core modified,🟡 Moderate,Affects licensing and performance; can break applications sensitive to CPU topology.
+Kernel ID Changed,Different kernel specified,🟡 Moderate,May introduce compatibility issues or unexpected behavior in instance boot process.
+RAM Disk ID Changed,Different ramdisk specified,🟡 Moderate,Can affect boot process and system behavior; rarely used but impacts initialization.
+Instance Name Tag Changed,Name tag text modified,🟢 Low,"Minimal security impact. Affects resource identification, cost tracking, and operational organization."
+Tag Added/Modified,Additional or changed tags,🟢 Low,"Affects cost allocation, automation triggers, and resource management but no functional impact."
+Tag Removed,Tag deleted from instance,🟢 Low,May break cost tracking or automation that relies on tags but no immediate security risk.
+Description Changed,Instance description updated,🟢 Low,Documentation change only; no functional or security impact on the running instance.
+</document_content>

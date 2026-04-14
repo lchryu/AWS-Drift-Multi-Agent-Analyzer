@@ -1,0 +1,31 @@
+{
+  "driftScenarios": [
+    {
+      "testId": "LOW-001",
+      "category": "Instance Name Tag Changed",
+      "severity": "Low",
+      "command": "CreateTags",
+      "parameters": {
+        "Resources": ["${INSTANCE_ID}"],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "Name-Modified-${TIMESTAMP}"
+          }
+        ]
+      },
+      "description": "Modify instance name tag",
+      "reversible": true,
+      "revertCommand": "CreateTags",
+      "revertParameters": {
+        "Resources": ["${INSTANCE_ID}"],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "${ORIGINAL_NAME}"
+          }
+        ]
+      }
+    }
+  ]
+}

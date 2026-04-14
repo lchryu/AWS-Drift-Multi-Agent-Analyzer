@@ -1,0 +1,1257 @@
+{
+  "driftScenarios": [
+    {
+      "testId": "HIGH-002",
+      "category": "Termination Protection Off",
+      "severity": "High",
+      "command": "ModifyInstanceAttribute",
+      "parameters": {
+        "InstanceId": "${INSTANCE_ID}",
+        "DisableApiTermination": {
+          "Value": false
+        }
+      },
+      "description": "Disable termination protection",
+      "reversible": true
+    },
+    {
+      "testId": "HIGH-003",
+      "category": "Security Group Opened",
+      "severity": "High",
+      "command": "ModifyInstanceAttribute",
+      "parameters": {
+        "InstanceId": "${INSTANCE_ID}",
+        "Groups": ["${OPEN_SECURITY_GROUP}"]
+      },
+      "description": "Attach security group with SSH port 22 open to 0.0.0.0/0",
+      "reversible": true
+    },
+    {
+      "testId": "HIGH-004",
+      "category": "Security Group Opened",
+      "severity": "High",
+      "command": "ModifyInstanceAttribute",
+      "parameters": {
+        "InstanceId": "${INSTANCE_ID}",
+        "Groups": ["${RDP_OPEN_SG}"]
+      },
+      "description": "Attach security group with RDP port 3389 open to internet",
+      "reversible": true
+    },
+    {
+      "testId": "HIGH-005",
+      "category": "Security Group Opened",
+      "severity": "High",
+      "command": "ModifyInstanceAttribute",
+      "parameters": {
+        "InstanceId": "${INSTANCE_ID}",
+        "Groups": ["${ALL_PORTS_OPEN_SG}"]
+      },
+      "description": "Attach security group with all ports open to 0.0.0.0/0",
+      "reversible": true
+    },
+    {
+      "testId": "HIGH-006",
+      "category": "IAM Instance Profile Changed",
+      "severity": "High",
+      "command": "DisassociateIamInstanceProfile",
+      "parameters": {
+        "AssociationId": "${IAM_ASSOCIATION_ID}"
+      },
+      "description": "Remove IAM instance profile completely",
+      "reversible": true
+    },
+    {
+      "testId": "HIGH-007",
+      "category": "IAM Instance Profile Changed",
+      "severity": "High",
+      "command": "AssociateIamInstanceProfile",
+      "parameters": {
+        "IamInstanceProfile": {
+          "Arn": "${ADMIN_PROFILE_ARN}"
+        },
+        "InstanceId": "${INSTANCE_ID}"
+      },
+      "description": "Replace with admin access IAM profile",
+      "reversible": true
+    },
+    {
+      "testId": "HIGH-008",
+      "category": "Metadata Service V1 Enabled",
+      "severity": "High",
+      "command": "ModifyInstanceMetadataOptions",
+      "parameters": {
+        "InstanceId": "${INSTANCE_ID}",
+        "HttpTokens": "optional"
+      },
+      "description": "Enable IMDSv1 (downgrade from IMDSv2)",
+      "reversible": true
+    },
+    {
+      "testId": "HIGH-009",
+      "category": "Metadata Service V1 Enabled",
+      "severity": "High",
+      "command": "ModifyInstanceMetadataOptions",
+      "parameters": {
+        "InstanceId": "${INSTANCE_ID}",
+        "HttpTokens": "optional",
+        "HttpPutResponseHopLimit": 64
+      },
+      "description": "Enable IMDSv1 and increase hop limit to 64",
+      "reversible": true
+    },
+    {
+      "testId": "HIGH-010",
+      "category": "Detailed Monitoring Disabled",
+      "severity": "High",
+      "command": "UnmonitorInstances",
+      "parameters": {
+        "InstanceIds": ["${INSTANCE_ID}"]
+      },
+      "description": "Disable CloudWatch detailed monitoring",
+      "reversible": true
+    },
+    {
+      "testId": "HIGH-011",
+      "category": "Source/Dest Check Disabled",
+      "severity": "High",
+      "command": "ModifyInstanceAttribute",
+      "parameters": {
+        "InstanceId": "${INSTANCE_ID}",
+        "SourceDestCheck": {
+          "Value": false
+        }
+      },
+      "description": "Disable source/destination check (NAT mode)",
+      "reversible": true
+    },
+    {
+      "testId": "HIGH-012",
+      "category": "User Data Modified",
+      "severity": "High",
+      "command": "ModifyInstanceAttribute",
+      "parameters": {
+        "InstanceId": "${INSTANCE_ID}",
+        "UserData": {
+          "Value": "IyEvYmluL2Jhc2gKZWNobyAiTWFsaWNpb3VzIHNjcmlwdCI="
+        }
+      },
+      "description": "Change user data to potentially malicious script",
+      "requiresStop": true,
+      "reversible": true
+    },
+    {
+      "testId": "HIGH-013",
+      "category": "User Data Modified",
+      "severity": "High",
+      "command": "ModifyInstanceAttribute",
+      "parameters": {
+        "InstanceId": "${INSTANCE_ID}",
+        "UserData": {
+          "Value": ""
+        }
+      },
+      "description": "Clear user data completely",
+      "requiresStop": true,
+      "reversible": true
+    },
+    {
+      "testId": "HIGH-014",
+      "category": "Public IP Assigned",
+      "severity": "High",
+      "command": "AssociateAddress",
+      "parameters": {
+        "InstanceId": "${INSTANCE_ID}",
+        "AllocationId": "${EIP_ALLOCATION_ID}"
+      },
+      "description": "Assign Elastic IP to private instance",
+      "reversible": true
+    },
+    {
+      "testId": "HIGH-015",
+      "category": "EBS Encryption Disabled",
+      "severity": "High",
+      "command": "CreateVolume",
+      "parameters": {
+        "AvailabilityZone": "${AZ}",
+        "Size": 10,
+        "Encrypted": false,
+        "VolumeType": "gp3"
+      },
+      "description": "Create and attach unencrypted EBS volume",
+      "reversible": true
+    },
+    {
+      "testId": "HIGH-016",
+      "category": "Network Interface Detached",
+      "severity": "High",
+      "command": "DetachNetworkInterface",
+      "parameters": {
+        "AttachmentId": "${ENI_ATTACHMENT_ID}"
+      },
+      "description": "Detach secondary network interface",
+      "reversible": true
+    },
+    {
+      "testId": "HIGH-017",
+      "category": "Subnet Changed",
+      "severity": "High",
+      "command": "CreateNetworkInterface",
+      "parameters": {
+        "SubnetId": "${DIFFERENT_SUBNET}",
+        "Groups": ["${SECURITY_GROUP}"]
+      },
+      "description": "Move instance to different subnet (via new ENI)",
+      "reversible": true
+    },
+    {
+      "testId": "HIGH-018",
+      "category": "Tenancy Changed",
+      "severity": "High",
+      "command": "ModifyInstancePlacement",
+      "parameters": {
+        "InstanceId": "${INSTANCE_ID}",
+        "Tenancy": "host"
+      },
+      "description": "Change from default to dedicated host tenancy",
+      "requiresStop": true,
+      "reversible": true
+    },
+    {
+      "testId": "HIGH-019",
+      "category": "Tenancy Changed",
+      "severity": "High",
+      "command": "ModifyInstancePlacement",
+      "parameters": {
+        "InstanceId": "${INSTANCE_ID}",
+        "Tenancy": "dedicated"
+      },
+      "description": "Change from default to dedicated tenancy",
+      "requiresStop": true,
+      "reversible": true
+    },
+    {
+      "testId": "HIGH-020",
+      "category": "Nitro Enclave Disabled",
+      "severity": "High",
+      "command": "ModifyInstanceAttribute",
+      "parameters": {
+        "InstanceId": "${INSTANCE_ID}",
+        "EnclaveOptions": {
+          "Enabled": false
+        }
+      },
+      "description": "Disable Nitro Enclave security feature",
+      "requiresStop": true,
+      "reversible": true
+    },
+    {
+      "testId": "MOD-001",
+      "category": "Instance Size/Type Changed",
+      "severity": "Moderate",
+      "command": "ModifyInstanceAttribute",
+      "parameters": {
+        "InstanceId": "${INSTANCE_ID}",
+        "InstanceType": {
+          "Value": "t3.micro"
+        }
+      },
+      "description": "Change from t3.small to t3.micro",
+      "requiresStop": true,
+      "reversible": true
+    },
+    {
+      "testId": "MOD-002",
+      "category": "Instance Size/Type Changed",
+      "severity": "Moderate",
+      "command": "ModifyInstanceAttribute",
+      "parameters": {
+        "InstanceId": "${INSTANCE_ID}",
+        "InstanceType": {
+          "Value": "t3.medium"
+        }
+      },
+      "description": "Change from t3.micro to t3.medium",
+      "requiresStop": true,
+      "reversible": true
+    },
+    {
+      "testId": "MOD-003",
+      "category": "Instance Size/Type Changed",
+      "severity": "Moderate",
+      "command": "ModifyInstanceAttribute",
+      "parameters": {
+        "InstanceId": "${INSTANCE_ID}",
+        "InstanceType": {
+          "Value": "t3.large"
+        }
+      },
+      "description": "Change from t3.micro to t3.large",
+      "requiresStop": true,
+      "reversible": true
+    },
+    {
+      "testId": "MOD-004",
+      "category": "Instance Size/Type Changed",
+      "severity": "Moderate",
+      "command": "ModifyInstanceAttribute",
+      "parameters": {
+        "InstanceId": "${INSTANCE_ID}",
+        "InstanceType": {
+          "Value": "t3.nano"
+        }
+      },
+      "description": "Downgrade from t3.micro to t3.nano",
+      "requiresStop": true,
+      "reversible": true
+    },
+    {
+      "testId": "MOD-005",
+      "category": "Instance Size/Type Changed",
+      "severity": "Moderate",
+      "command": "ModifyInstanceAttribute",
+      "parameters": {
+        "InstanceId": "${INSTANCE_ID}",
+        "InstanceType": {
+          "Value": "t3a.micro"
+        }
+      },
+      "description": "Change from t3 to t3a family (AMD)",
+      "requiresStop": true,
+      "reversible": true
+    },
+    {
+      "testId": "MOD-006",
+      "category": "AMI Changed",
+      "severity": "Moderate",
+      "command": "ModifyInstanceAttribute",
+      "parameters": {
+        "InstanceId": "${INSTANCE_ID}",
+        "ImageId": {
+          "Value": "${NEW_AMI_ID}"
+        }
+      },
+      "description": "Change to different AMI (requires termination and recreate)",
+      "requiresStop": true,
+      "reversible": false
+    },
+    {
+      "testId": "MOD-007",
+      "category": "EBS Volume Attached/Detached",
+      "severity": "Moderate",
+      "command": "AttachVolume",
+      "parameters": {
+        "Device": "/dev/sdf",
+        "InstanceId": "${INSTANCE_ID}",
+        "VolumeId": "${ADDITIONAL_VOLUME_ID}"
+      },
+      "description": "Attach additional EBS volume",
+      "reversible": true
+    },
+    {
+      "testId": "MOD-008",
+      "category": "EBS Volume Attached/Detached",
+      "severity": "Moderate",
+      "command": "DetachVolume",
+      "parameters": {
+        "VolumeId": "${ATTACHED_VOLUME_ID}"
+      },
+      "description": "Detach EBS volume",
+      "reversible": true
+    },
+    {
+      "testId": "MOD-009",
+      "category": "EBS Volume Size Changed",
+      "severity": "Moderate",
+      "command": "ModifyVolume",
+      "parameters": {
+        "VolumeId": "${ROOT_VOLUME_ID}",
+        "Size": 20
+      },
+      "description": "Expand root volume from 8GB to 20GB",
+      "reversible": false
+    },
+    {
+      "testId": "MOD-010",
+      "category": "EBS Volume Size Changed",
+      "severity": "Moderate",
+      "command": "ModifyVolume",
+      "parameters": {
+        "VolumeId": "${ROOT_VOLUME_ID}",
+        "Size": 50
+      },
+      "description": "Expand root volume from 8GB to 50GB",
+      "reversible": false
+    },
+    {
+      "testId": "MOD-011",
+      "category": "EBS Volume Type Changed",
+      "severity": "Moderate",
+      "command": "ModifyVolume",
+      "parameters": {
+        "VolumeId": "${ROOT_VOLUME_ID}",
+        "VolumeType": "gp3"
+      },
+      "description": "Change from gp2 to gp3",
+      "reversible": true
+    },
+    {
+      "testId": "MOD-012",
+      "category": "EBS Volume Type Changed",
+      "severity": "Moderate",
+      "command": "ModifyVolume",
+      "parameters": {
+        "VolumeId": "${ROOT_VOLUME_ID}",
+        "VolumeType": "io1",
+        "Iops": 1000
+      },
+      "description": "Change from gp2 to io1 (provisioned IOPS)",
+      "reversible": true
+    },
+    {
+      "testId": "MOD-013",
+      "category": "EBS Volume Type Changed",
+      "severity": "Moderate",
+      "command": "ModifyVolume",
+      "parameters": {
+        "VolumeId": "${ROOT_VOLUME_ID}",
+        "VolumeType": "io2",
+        "Iops": 2000
+      },
+      "description": "Change from gp2 to io2",
+      "reversible": true
+    },
+    {
+      "testId": "MOD-014",
+      "category": "EBS IOPS/Throughput Modified",
+      "severity": "Moderate",
+      "command": "ModifyVolume",
+      "parameters": {
+        "VolumeId": "${ROOT_VOLUME_ID}",
+        "Iops": 5000
+      },
+      "description": "Increase IOPS from 3000 to 5000",
+      "reversible": true
+    },
+    {
+      "testId": "MOD-015",
+      "category": "EBS IOPS/Throughput Modified",
+      "severity": "Moderate",
+      "command": "ModifyVolume",
+      "parameters": {
+        "VolumeId": "${ROOT_VOLUME_ID}",
+        "Throughput": 500
+      },
+      "description": "Increase throughput to 500 MiB/s",
+      "reversible": true
+    },
+    {
+      "testId": "MOD-016",
+      "category": "EBS IOPS/Throughput Modified",
+      "severity": "Moderate",
+      "command": "ModifyVolume",
+      "parameters": {
+        "VolumeId": "${ROOT_VOLUME_ID}",
+        "Iops": 1000
+      },
+      "description": "Decrease IOPS from 3000 to 1000",
+      "reversible": true
+    },
+    {
+      "testId": "MOD-017",
+      "category": "Availability Zone Changed",
+      "severity": "Moderate",
+      "command": "CreateImage",
+      "parameters": {
+        "InstanceId": "${INSTANCE_ID}",
+        "Name": "temp-migration-ami-${TIMESTAMP}"
+      },
+      "description": "Create AMI for AZ migration (step 1)",
+      "reversible": false
+    },
+    {
+      "testId": "MOD-018",
+      "category": "Placement Group Modified",
+      "severity": "Moderate",
+      "command": "ModifyInstancePlacement",
+      "parameters": {
+        "InstanceId": "${INSTANCE_ID}",
+        "GroupName": "${PLACEMENT_GROUP_NAME}"
+      },
+      "description": "Add instance to placement group",
+      "requiresStop": true,
+      "reversible": true
+    },
+    {
+      "testId": "MOD-019",
+      "category": "Placement Group Modified",
+      "severity": "Moderate",
+      "command": "ModifyInstancePlacement",
+      "parameters": {
+        "InstanceId": "${INSTANCE_ID}",
+        "GroupName": ""
+      },
+      "description": "Remove instance from placement group",
+      "requiresStop": true,
+      "reversible": true
+    },
+    {
+      "testId": "MOD-020",
+      "category": "Placement Group Modified",
+      "severity": "Moderate",
+      "command": "ModifyInstancePlacement",
+      "parameters": {
+        "InstanceId": "${INSTANCE_ID}",
+        "GroupName": "${DIFFERENT_PLACEMENT_GROUP}"
+      },
+      "description": "Move to different placement group",
+      "requiresStop": true,
+      "reversible": true
+    },
+    {
+      "testId": "MOD-021",
+      "category": "Secondary Private IP Added",
+      "severity": "Moderate",
+      "command": "AssignPrivateIpAddresses",
+      "parameters": {
+        "NetworkInterfaceId": "${ENI_ID}",
+        "PrivateIpAddresses": ["10.0.1.100"]
+      },
+      "description": "Add secondary private IP 10.0.1.100",
+      "reversible": true
+    },
+    {
+      "testId": "MOD-022",
+      "category": "Secondary Private IP Added",
+      "severity": "Moderate",
+      "command": "AssignPrivateIpAddresses",
+      "parameters": {
+        "NetworkInterfaceId": "${ENI_ID}",
+        "SecondaryPrivateIpAddressCount": 2
+      },
+      "description": "Add 2 secondary private IPs automatically",
+      "reversible": true
+    },
+    {
+      "testId": "MOD-023",
+      "category": "Secondary Private IP Added",
+      "severity": "Moderate",
+      "command": "AssignPrivateIpAddresses",
+      "parameters": {
+        "NetworkInterfaceId": "${ENI_ID}",
+        "PrivateIpAddresses": ["10.0.1.101", "10.0.1.102"]
+      },
+      "description": "Add multiple secondary IPs",
+      "reversible": true
+    },
+    {
+      "testId": "MOD-024",
+      "category": "Elastic IP Associated",
+      "severity": "Moderate",
+      "command": "AssociateAddress",
+      "parameters": {
+        "InstanceId": "${INSTANCE_ID}",
+        "AllocationId": "${EIP_ALLOCATION_ID}"
+      },
+      "description": "Associate Elastic IP",
+      "reversible": true
+    },
+    {
+      "testId": "MOD-025",
+      "category": "Elastic IP Disassociated",
+      "severity": "Moderate",
+      "command": "DisassociateAddress",
+      "parameters": {
+        "AssociationId": "${EIP_ASSOCIATION_ID}"
+      },
+      "description": "Remove Elastic IP association",
+      "reversible": true
+    },
+    {
+      "testId": "MOD-026",
+      "category": "Security Group Modified",
+      "severity": "Moderate",
+      "command": "ModifyInstanceAttribute",
+      "parameters": {
+        "InstanceId": "${INSTANCE_ID}",
+        "Groups": ["${DIFFERENT_SG_ID}"]
+      },
+      "description": "Replace with different security group",
+      "reversible": true
+    },
+    {
+      "testId": "MOD-027",
+      "category": "Security Group Modified",
+      "severity": "Moderate",
+      "command": "ModifyInstanceAttribute",
+      "parameters": {
+        "InstanceId": "${INSTANCE_ID}",
+        "Groups": ["${SG_1}", "${SG_2}"]
+      },
+      "description": "Add additional security group",
+      "reversible": true
+    },
+    {
+      "testId": "MOD-028",
+      "category": "Security Group Modified",
+      "severity": "Moderate",
+      "command": "ModifyInstanceAttribute",
+      "parameters": {
+        "InstanceId": "${INSTANCE_ID}",
+        "Groups": ["${SG_1}"]
+      },
+      "description": "Remove one security group (keep primary)",
+      "reversible": true
+    },
+    {
+      "testId": "MOD-029",
+      "category": "Credit Specification Changed",
+      "severity": "Moderate",
+      "command": "ModifyInstanceCreditSpecification",
+      "parameters": {
+        "InstanceCreditSpecifications": [
+          {
+            "InstanceId": "${INSTANCE_ID}",
+            "CpuCredits": "unlimited"
+          }
+        ]
+      },
+      "description": "Enable unlimited CPU credits",
+      "reversible": true
+    },
+    {
+      "testId": "MOD-030",
+      "category": "Credit Specification Changed",
+      "severity": "Moderate",
+      "command": "ModifyInstanceCreditSpecification",
+      "parameters": {
+        "InstanceCreditSpecifications": [
+          {
+            "InstanceId": "${INSTANCE_ID}",
+            "CpuCredits": "standard"
+          }
+        ]
+      },
+      "description": "Change to standard CPU credits",
+      "reversible": true
+    },
+    {
+      "testId": "MOD-031",
+      "category": "Hibernation Enabled/Disabled",
+      "severity": "Moderate",
+      "command": "ModifyInstanceAttribute",
+      "parameters": {
+        "InstanceId": "${INSTANCE_ID}",
+        "HibernationOptions": {
+          "Configured": true
+        }
+      },
+      "description": "Enable hibernation",
+      "requiresStop": true,
+      "reversible": true
+    },
+    {
+      "testId": "MOD-032",
+      "category": "Hibernation Enabled/Disabled",
+      "severity": "Moderate",
+      "command": "ModifyInstanceAttribute",
+      "parameters": {
+        "InstanceId": "${INSTANCE_ID}",
+        "HibernationOptions": {
+          "Configured": false
+        }
+      },
+      "description": "Disable hibernation",
+      "requiresStop": true,
+      "reversible": true
+    },
+    {
+      "testId": "MOD-033",
+      "category": "Monitoring Interval Changed",
+      "severity": "Moderate",
+      "command": "MonitorInstances",
+      "parameters": {
+        "InstanceIds": ["${INSTANCE_ID}"]
+      },
+      "description": "Enable detailed monitoring (1-min intervals)",
+      "reversible": true
+    },
+    {
+      "testId": "MOD-034",
+      "category": "Monitoring Interval Changed",
+      "severity": "Moderate",
+      "command": "UnmonitorInstances",
+      "parameters": {
+        "InstanceIds": ["${INSTANCE_ID}"]
+      },
+      "description": "Switch to basic monitoring (5-min intervals)",
+      "reversible": true
+    },
+    {
+      "testId": "MOD-035",
+      "category": "Instance Metadata Options",
+      "severity": "Moderate",
+      "command": "ModifyInstanceMetadataOptions",
+      "parameters": {
+        "InstanceId": "${INSTANCE_ID}",
+        "HttpPutResponseHopLimit": 2
+      },
+      "description": "Change metadata hop limit to 2",
+      "reversible": true
+    },
+    {
+      "testId": "MOD-036",
+      "category": "Instance Metadata Options",
+      "severity": "Moderate",
+      "command": "ModifyInstanceMetadataOptions",
+      "parameters": {
+        "InstanceId": "${INSTANCE_ID}",
+        "HttpPutResponseHopLimit": 3
+      },
+      "description": "Change metadata hop limit to 3",
+      "reversible": true
+    },
+    {
+      "testId": "MOD-037",
+      "category": "Instance Metadata Options",
+      "severity": "Moderate",
+      "command": "ModifyInstanceMetadataOptions",
+      "parameters": {
+        "InstanceId": "${INSTANCE_ID}",
+        "HttpEndpoint": "disabled"
+      },
+      "description": "Disable metadata service entirely",
+      "reversible": true
+    },
+    {
+      "testId": "MOD-038",
+      "category": "Instance Metadata Options",
+      "severity": "Moderate",
+      "command": "ModifyInstanceMetadataOptions",
+      "parameters": {
+        "InstanceId": "${INSTANCE_ID}",
+        "InstanceMetadataTags": "enabled"
+      },
+      "description": "Enable instance metadata tags",
+      "reversible": true
+    },
+    {
+      "testId": "MOD-039",
+      "category": "Capacity Reservation",
+      "severity": "Moderate",
+      "command": "ModifyInstanceCapacityReservationAttributes",
+      "parameters": {
+        "InstanceId": "${INSTANCE_ID}",
+        "CapacityReservationSpecification": {
+          "CapacityReservationTarget": {
+            "CapacityReservationId": "${RESERVATION_ID}"
+          }
+        }
+      },
+      "description": "Add to capacity reservation",
+      "reversible": true
+    },
+    {
+      "testId": "MOD-040",
+      "category": "Capacity Reservation",
+      "severity": "Moderate",
+      "command": "ModifyInstanceCapacityReservationAttributes",
+      "parameters": {
+        "InstanceId": "${INSTANCE_ID}",
+        "CapacityReservationSpecification": {
+          "CapacityReservationPreference": "none"
+        }
+      },
+      "description": "Remove from capacity reservation",
+      "reversible": true
+    },
+    {
+      "testId": "MOD-041",
+      "category": "CPU Options Changed",
+      "severity": "Moderate",
+      "command": "ModifyInstanceAttribute",
+      "parameters": {
+        "InstanceId": "${INSTANCE_ID}",
+        "CpuOptions": {
+          "CoreCount": 1,
+          "ThreadsPerCore": 1
+        }
+      },
+      "description": "Change CPU topology (1 core, 1 thread)",
+      "requiresStop": true,
+      "reversible": true
+    },
+    {
+      "testId": "MOD-042",
+      "category": "CPU Options Changed",
+      "severity": "Moderate",
+      "command": "ModifyInstanceAttribute",
+      "parameters": {
+        "InstanceId": "${INSTANCE_ID}",
+        "CpuOptions": {
+          "CoreCount": 1,
+          "ThreadsPerCore": 2
+        }
+      },
+      "description": "Change CPU topology (1 core, 2 threads)",
+      "requiresStop": true,
+      "reversible": true
+    },
+    {
+      "testId": "MOD-043",
+      "category": "Kernel ID Changed",
+      "severity": "Moderate",
+      "command": "ModifyInstanceAttribute",
+      "parameters": {
+        "InstanceId": "${INSTANCE_ID}",
+        "Kernel": {
+          "Value": "${NEW_KERNEL_ID}"
+        }
+      },
+      "description": "Change kernel ID",
+      "requiresStop": true,
+      "reversible": true
+    },
+    {
+      "testId": "MOD-044",
+      "category": "RAM Disk ID Changed",
+      "severity": "Moderate",
+      "command": "ModifyInstanceAttribute",
+      "parameters": {
+        "InstanceId": "${INSTANCE_ID}",
+        "Ramdisk": {
+          "Value": "${NEW_RAMDISK_ID}"
+        }
+      },
+      "description": "Change RAM disk ID",
+      "requiresStop": true,
+      "reversible": true
+    },
+    {
+      "testId": "LOW-001",
+      "category": "Instance Name Tag Changed",
+      "severity": "Low",
+      "command": "CreateTags",
+      "parameters": {
+        "Resources": ["${INSTANCE_ID}"],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "Modified-Instance-${TIMESTAMP}"
+          }
+        ]
+      },
+      "description": "Change instance name tag with timestamp",
+      "reversible": true
+    },
+    {
+      "testId": "LOW-002",
+      "category": "Instance Name Tag Changed",
+      "severity": "Low",
+      "command": "CreateTags",
+      "parameters": {
+        "Resources": ["${INSTANCE_ID}"],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": ""
+          }
+        ]
+      },
+      "description": "Clear instance name (empty string)",
+      "reversible": true
+    },
+    {
+      "testId": "LOW-003",
+      "category": "Instance Name Tag Changed",
+      "severity": "Low",
+      "command": "CreateTags",
+      "parameters": {
+        "Resources": ["${INSTANCE_ID}"],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "VeryLongInstanceNameThatExceedsNormalLengthForTestingPurposesAndShouldStillWorkFineInAWSButMightCauseSomeUIIssuesInVariousTools"
+          }
+        ]
+      },
+      "description": "Set very long instance name (150 chars)",
+      "reversible": true
+    },
+    {
+      "testId": "LOW-004",
+      "category": "Instance Name Tag Changed",
+      "severity": "Low",
+      "command": "CreateTags",
+      "parameters": {
+        "Resources": ["${INSTANCE_ID}"],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "Test-Server-Updated"
+          }
+        ]
+      },
+      "description": "Simple name change",
+      "reversible": true
+    },
+    {
+      "testId": "LOW-005",
+      "category": "Instance Name Tag Changed",
+      "severity": "Low",
+      "command": "CreateTags",
+      "parameters": {
+        "Resources": ["${INSTANCE_ID}"],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "PROD-WEB-${TIMESTAMP}"
+          }
+        ]
+      },
+      "description": "Change to production naming convention",
+      "reversible": true
+    },
+    {
+      "testId": "LOW-006",
+      "category": "Tag Added/Modified",
+      "severity": "Low",
+      "command": "CreateTags",
+      "parameters": {
+        "Resources": ["${INSTANCE_ID}"],
+        "Tags": [
+          {
+            "Key": "Environment",
+            "Value": "Development"
+          }
+        ]
+      },
+      "description": "Add Environment tag",
+      "reversible": true
+    },
+    {
+      "testId": "LOW-007",
+      "category": "Tag Added/Modified",
+      "severity": "Low",
+      "command": "CreateTags",
+      "parameters": {
+        "Resources": ["${INSTANCE_ID}"],
+        "Tags": [
+          {
+            "Key": "Owner",
+            "Value": "DevOps-Team"
+          }
+        ]
+      },
+      "description": "Add Owner tag",
+      "reversible": true
+    },
+    {
+      "testId": "LOW-008",
+      "category": "Tag Added/Modified",
+      "severity": "Low",
+      "command": "CreateTags",
+      "parameters": {
+        "Resources": ["${INSTANCE_ID}"],
+        "Tags": [
+          {
+            "Key": "CostCenter",
+            "Value": "Engineering-${TIMESTAMP}"
+          }
+        ]
+      },
+      "description": "Add CostCenter tag with timestamp",
+      "reversible": true
+    },
+    {
+      "testId": "LOW-009",
+      "category": "Tag Added/Modified",
+      "severity": "Low",
+      "command": "CreateTags",
+      "parameters": {
+        "Resources": ["${INSTANCE_ID}"],
+        "Tags": [
+          {
+            "Key": "Project",
+            "Value": "CloudFormation-Drift-Testing"
+          }
+        ]
+      },
+      "description": "Add Project tag",
+      "reversible": true
+    },
+    {
+      "testId": "LOW-010",
+      "category": "Tag Added/Modified",
+      "severity": "Low",
+      "command": "CreateTags",
+      "parameters": {
+        "Resources": ["${INSTANCE_ID}"],
+        "Tags": [
+          {
+            "Key": "Backup",
+            "Value": "Daily"
+          }
+        ]
+      },
+      "description": "Add Backup schedule tag",
+      "reversible": true
+    },
+    {
+      "testId": "LOW-011",
+      "category": "Tag Added/Modified",
+      "severity": "Low",
+      "command": "CreateTags",
+      "parameters": {
+        "Resources": ["${INSTANCE_ID}"],
+        "Tags": [
+          {
+            "Key": "Compliance",
+            "Value": "SOC2"
+          }
+        ]
+      },
+      "description": "Add Compliance tag",
+      "reversible": true
+    },
+    {
+      "testId": "LOW-012",
+      "category": "Tag Added/Modified",
+      "severity": "Low",
+      "command": "CreateTags",
+      "parameters": {
+        "Resources": ["${INSTANCE_ID}"],
+        "Tags": [
+          {
+            "Key": "ManagedBy",
+            "Value": "Terraform"
+          }
+        ]
+      },
+      "description": "Add ManagedBy tag",
+      "reversible": true
+    },
+    {
+      "testId": "LOW-013",
+      "category": "Tag Added/Modified",
+      "severity": "Low",
+      "command": "CreateTags",
+      "parameters": {
+        "Resources": ["${INSTANCE_ID}"],
+        "Tags": [
+          {
+            "Key": "Description",
+            "Value": "Test server for drift detection"
+          }
+        ]
+      },
+      "description": "Add Description tag",
+      "reversible": true
+    },
+    {
+      "testId": "LOW-014",
+      "category": "Tag Added/Modified",
+      "severity": "Low",
+      "command": "CreateTags",
+      "parameters": {
+        "Resources": ["${INSTANCE_ID}"],
+        "Tags": [
+          {
+            "Key": "AutoShutdown",
+            "Value": "true"
+          }
+        ]
+      },
+      "description": "Add AutoShutdown automation tag",
+      "reversible": true
+    },
+    {
+      "testId": "LOW-015",
+      "category": "Tag Added/Modified",
+      "severity": "Low",
+      "command": "CreateTags",
+      "parameters": {
+        "Resources": ["${INSTANCE_ID}"],
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": "WebServer"
+          },
+          {
+            "Key": "Version",
+            "Value": "v2.1.0"
+          }
+        ]
+      },
+      "description": "Add multiple tags at once",
+      "reversible": true
+    },
+    {
+      "testId": "LOW-016",
+      "category": "Tag Added/Modified",
+      "severity": "Low",
+      "command": "CreateTags",
+      "parameters": {
+        "Resources": ["${INSTANCE_ID}"],
+        "Tags": [
+          {
+            "Key": "Environment",
+            "Value": "Production-Modified-${TIMESTAMP}"
+          }
+        ]
+      },
+      "description": "Modify existing Environment tag",
+      "reversible": true
+    },
+    {
+      "testId": "LOW-017",
+      "category": "Tag Added/Modified",
+      "severity": "Low",
+      "command": "CreateTags",
+      "parameters": {
+        "Resources": ["${INSTANCE_ID}"],
+        "Tags": [
+          {
+            "Key": "DriftTest",
+            "Value": "Active"
+          }
+        ]
+      },
+      "description": "Add drift testing flag",
+      "reversible": true
+    },
+    {
+      "testId": "LOW-018",
+      "category": "Tag Removed",
+      "severity": "Low",
+      "command": "DeleteTags",
+      "parameters": {
+        "Resources": ["${INSTANCE_ID}"],
+        "Tags": [
+          {
+            "Key": "Environment"
+          }
+        ]
+      },
+      "description": "Remove Environment tag",
+      "reversible": true
+    },
+    {
+      "testId": "LOW-019",
+      "category": "Tag Removed",
+      "severity": "Low",
+      "command": "DeleteTags",
+      "parameters": {
+        "Resources": ["${INSTANCE_ID}"],
+        "Tags": [
+          {
+            "Key": "Owner"
+          }
+        ]
+      },
+      "description": "Remove Owner tag",
+      "reversible": true
+    },
+    {
+      "testId": "LOW-020",
+      "category": "Tag Removed",
+      "severity": "Low",
+      "command": "DeleteTags",
+      "parameters": {
+        "Resources": ["${INSTANCE_ID}"],
+        "Tags": [
+          {
+            "Key": "CostCenter"
+          }
+        ]
+      },
+      "description": "Remove CostCenter tag",
+      "reversible": true
+    },
+    {
+      "testId": "LOW-021",
+      "category": "Tag Removed",
+      "severity": "Low",
+      "command": "DeleteTags",
+      "parameters": {
+        "Resources": ["${INSTANCE_ID}"],
+        "Tags": [
+          {
+            "Key": "Project"
+          }
+        ]
+      },
+      "description": "Remove Project tag",
+      "reversible": true
+    },
+    {
+      "testId": "LOW-022",
+      "category": "Tag Removed",
+      "severity": "Low",
+      "command": "DeleteTags",
+      "parameters": {
+        "Resources": ["${INSTANCE_ID}"],
+        "Tags": [
+          {
+            "Key": "DriftTest"
+          }
+        ]
+      },
+      "description": "Remove drift test tag",
+      "reversible": true
+    },
+    {
+      "testId": "LOW-023",
+      "category": "Tag Removed",
+      "severity": "Low",
+      "command": "DeleteTags",
+      "parameters": {
+        "Resources": ["${INSTANCE_ID}"],
+        "Tags": [
+          {
+            "Key": "Environment"
+          },
+          {
+            "Key": "Owner"
+          }
+        ]
+      },
+      "description": "Remove multiple tags at once",
+      "reversible": true
+    },
+    {
+      "testId": "LOW-024",
+      "category": "Description Changed",
+      "severity": "Low",
+      "command": "CreateTags",
+      "parameters": {
+        "Resources": ["${INSTANCE_ID}"],
+        "Tags": [
+          {
+            "Key": "Description",
+            "Value": "Updated description - ${TIMESTAMP}"
+          }
+        ]
+      },
+      "description": "Update instance description",
+      "reversible": true
+    },
+    {
+      "testId": "LOW-025",
+      "category": "Description Changed",
+      "severity": "Low",
+      "command": "CreateTags",
+      "parameters": {
+        "Resources": ["${INSTANCE_ID}"],
+        "Tags": [
+          {
+            "Key": "Description",
+            "Value": ""
+          }
+        ]
+      },
+      "description": "Clear description",
+      "reversible": true
+    }
+  ]
+}

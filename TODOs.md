@@ -1,0 +1,21 @@
+# To do list
+
+- [x] Push agent into agentcore
+- [x] In corporate agent into the AI chatbot UI
+- [x] Make it streaming
+- [x] Add convo history, state into agent
+- [x] Fix init script \ I guess =))) \
+- [x] Init database local side
+- [x] Connect db local with UI
+- [x] Add session into agent
+- [x] Add loading animation when chatbot is responding
+- [x] Fix UI, the user shouldn't be able to send message when the chatbot is responding
+- [ ] Classification feature
+  - [x] Create the classification mode
+  - [x] Use a separate prompt and agent config
+  - [ ] Integrate with frontend
+- [ ] Add different mode into the chat UI , ask, planning, agent
+- [ ] Create an agent to check drift every x minutes
+- [ ] Escalate pattern (if have time)
+- [ ] Add & Remove aws IAM for agent
+- [ ] Syncing & Improving caching if have time

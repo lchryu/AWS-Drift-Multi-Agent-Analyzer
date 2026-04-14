@@ -1,0 +1,332 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >
+  CloudFormation stack to set up API Gateway + Lambda that calls an AWS Bedrock model.
+
+Resources:
+  BedrockInvokeRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: BedrockInvokeRole
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: BedrockInvokePolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: "*"
+              - Effect: Allow
+                Action:
+                  - bedrock:InvokeModel
+                Resource: "*"
+
+  BedrockLambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: BedrockInvoker
+      Runtime: python3.11
+      Handler: index.lambda_handler
+      Role: !GetAtt BedrockInvokeRole.Arn
+      Timeout: 30
+      Code:
+        ZipFile: |
+          import json
+          import boto3
+          import os
+
+          def lambda_handler(event, context):
+              bedrock = boto3.client(service_name="bedrock-runtime", region_name="us-east-1")
+
+              try:
+                  body = json.loads(event["body"])
+                  prompt = body.get("prompt", "Hello from AWS Lambda!")
+
+                  response = bedrock.invoke_model(
+                      modelId="anthropic.claude-3-haiku-20240307-v1:0",
+                      body=json.dumps({
+                          "anthropic_version": "bedrock-2023-05-31",  # REQUIRED field
+                          "max_tokens": 200,  # Required for Anthropic
+                          "messages": [
+                              {
+                                  "role": "user",
+                                  "content": [{"type": "text", "text": prompt}]
+                              }
+                          ]
+                      }),
+                      contentType="application/json",
+                      accept="application/json"
+                  )
+
+                  model_response = json.loads(response["body"].read())
+
+                  # Extract the text output properly
+                  output_text = model_response["content"][0]["text"]
+
+                  return {
+                      "statusCode": 200,
+                      "headers": {"Content-Type": "application/json"},
+                      "body": json.dumps({"response": output_text})
+                  }
+
+              except Exception as e:
+                  return {
+                      "statusCode": 500,
+                      "body": json.dumps({"error": str(e)})
+                  }
+
+  BedrockApi:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: BedrockApi
+      EndpointConfiguration:
+        Types: ["REGIONAL"]
+
+  BedrockApiResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref BedrockApi
+      ParentId: !GetAtt BedrockApi.RootResourceId
+      PathPart: "invoke"
+
+  BedrockApiMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref BedrockApi
+      ResourceId: !Ref BedrockApiResource
+      HttpMethod: POST
+      AuthorizationType: NONE
+      Integration:
+        Type: AWS_PROXY
+        IntegrationHttpMethod: POST
+        Uri:
+          Fn::Sub:
+            - arn:aws:apigateway:${Region}:lambda:path/2015-03-31/functions/${LambdaArn}/invocations
+            - {
+                Region: !Ref "AWS::Region",
+                LambdaArn: !GetAtt BedrockLambdaFunction.Arn,
+              }
+
+  BedrockLambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref BedrockLambdaFunction
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        Fn::Sub: arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${BedrockApi}/*/POST/invoke
+
+  BedrockApiDeployment:
+    Type: AWS::ApiGateway::Deployment
+    DependsOn: BedrockApiMethod
+    Properties:
+      RestApiId: !Ref BedrockApi
+      StageName: prod
+
+  DriftSchedulerRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action: sts:AssumeRole
+
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - arn:aws:iam::aws:policy/AmazonBedrockFullAccess
+        - arn:aws:iam::aws:policy/AmazonSESFullAccess
+
+      Policies:
+        - PolicyName: DriftCheckPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+
+              - Effect: Allow
+                Action:
+                  - cloudformation:ListStacks
+                  - cloudformation:DetectStackDrift
+                  - cloudformation:DescribeStackDriftDetectionStatus
+                  - cloudformation:DescribeStacks
+                Resource: "*"
+
+              - Effect: Allow
+                Action:
+                  - bedrock-agentcore:InvokeAgentRuntime
+                Resource: "*"
+
+
+  DriftSchedulerLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: Agent-Drift-Scheduler
+      Runtime: python3.11
+      Handler: index.lambda_handler
+      Timeout: 60
+      Role: !GetAtt DriftSchedulerRole.Arn
+
+      Environment:
+        Variables:
+          REGION: us-east-1
+          AGENT_RUNTIME_ARN: arn:aws:bedrock-agentcore:us-east-1:899013845518:runtime/agent_deployment_agent-AcyHTX70wX
+          EMAIL_TO: crystalphe2005@gmail.com
+          EMAIL_FROM: crystalphe2005@gmail.com
+
+      Code:
+        ZipFile: |
+          import boto3
+          import json
+          import uuid
+          import os
+
+          REGION = os.environ["REGION"]
+          AGENT_RUNTIME_ARN = os.environ["AGENT_RUNTIME_ARN"]
+          EMAIL_TO = os.environ["EMAIL_TO"]
+          EMAIL_FROM = os.environ["EMAIL_FROM"]
+
+          agent_core_client = boto3.client("bedrock-agentcore", region_name=REGION)
+          ses = boto3.client("ses", region_name=REGION)
+
+          def _extract_text_from_event(obj):
+              # AgentCore event-stream payloads vary; handle common shapes.
+              if obj is None:
+                  return ""
+              if isinstance(obj, str):
+                  return obj
+              if isinstance(obj, dict):
+                  if obj.get("type") in ("end", "done"):
+                      return ""
+                  # Common streaming shapes
+                  delta = obj.get("delta")
+                  if isinstance(delta, dict) and isinstance(delta.get("text"), str):
+                      return delta["text"]
+                  if isinstance(obj.get("text"), str):
+                      return obj["text"]
+                  if isinstance(obj.get("output_text"), str):
+                      return obj["output_text"]
+                  if isinstance(obj.get("content"), str):
+                      return obj["content"]
+              return ""
+
+          def _parse_sse_text(raw_stream: str) -> str:
+              parts = []
+              for line in raw_stream.splitlines():
+                  line = line.strip()
+                  if not line.startswith("data:"):
+                      continue
+                  payload = line[len("data:"):].strip()
+                  if not payload or payload == "[DONE]":
+                      continue
+
+                  # `data:` often contains JSON. Sometimes it's a JSON string token, sometimes an object.
+                  try:
+                      obj = json.loads(payload)
+                  except Exception:
+                      # If it's not JSON, treat it as raw text.
+                      parts.append(payload)
+                      continue
+
+                  # If it's a JSON string, unescape it (fixes \" and doubled quotes).
+                  if isinstance(obj, str):
+                      parts.append(obj)
+                      continue
+
+                  # If it's an object, extract text from known fields.
+                  parts.append(_extract_text_from_event(obj))
+
+              return "".join(parts).strip()
+
+          def lambda_handler(event, context):
+              try:
+
+                  session_id = str(uuid.uuid4())
+
+                  payload = json.dumps({
+                      "prompt": """
+                          You are generating an email report.
+
+                          Output MUST start with this exact title line, on its own line:
+                          DAILY SYSTEM DRIFT REPORT
+
+                          Then a blank line.
+
+                          Then run a CloudFormation drift check on my stacks in us-east-1.
+
+                          IMPORTANT:
+                          Return ONLY this format:
+
+                          DRIFT REPORT
+                          Stack Name:
+                          Stack Status:
+                          Drift Status:
+                          Missing Permissions:
+                          Recommended Fix:
+                          """
+                  }).encode("utf-8")
+
+                  response = agent_core_client.invoke_agent_runtime(
+                      agentRuntimeArn=AGENT_RUNTIME_ARN,
+                      runtimeSessionId=session_id,
+                      payload=payload
+                  )
+
+                  raw_stream = response["response"].read().decode("utf-8")
+                  result_text = _parse_sse_text(raw_stream)
+
+                  ses.send_email(
+                      Source=EMAIL_FROM,
+                      Destination={"ToAddresses": [EMAIL_TO]},
+                      Message={
+                          "Subject": {"Data": "CloudFormation Drift Check Result"},
+                          "Body": {"Text": {"Data": result_text}},
+                      },
+                  )
+
+                  return {
+                      "statusCode": 200,
+                      "body": json.dumps({"result": result_text})
+                  }
+
+              except Exception as e:
+                  return {
+                      "statusCode": 500,
+                      "body": json.dumps({"error": str(e)})
+                  }
+
+  DriftCheckSchedule:
+    Type: AWS::Events::Rule
+    Properties:
+      ScheduleExpression: rate(24 hours)
+      State: ENABLED
+      Targets:
+        - Arn: !GetAtt DriftSchedulerLambda.Arn
+          Id: DriftLambdaTarget
+
+
+  DriftSchedulerInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref DriftSchedulerLambda
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt DriftCheckSchedule.Arn
+
+Outputs:
+  ApiInvokeUrl:
+    Description: "Invoke URL for the Bedrock API"
+    Value:
+      Fn::Sub: https://${BedrockApi}.execute-api.${AWS::Region}.amazonaws.com/prod/invoke

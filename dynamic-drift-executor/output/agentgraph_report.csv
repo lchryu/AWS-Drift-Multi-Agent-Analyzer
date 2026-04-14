@@ -1,0 +1,24 @@
+testId,category,severity,command,description,status,success,error,duration_ms,executor_executions,execution_order,verify_excerpt,execute_excerpt,task,timestamp_utc
+HIGH-002,Termination Protection Off,High,ModifyInstanceAttribute,Disable termination protection,error,False,"FileNotFoundError: [WinError 2] The system cannot find the file specified
+Traceback (most recent call last):
+  File ""E:\Stuffs\Syncphone\Swinburne\Final semester\Project B\capstone-project-a-hn3-1\agentcore\run_agentgraph_tests.py"", line 221, in main
+    subprocess.run(
+  File ""C:\Program Files\Python312\Lib\subprocess.py"", line 548, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""C:\Program Files\Python312\Lib\subprocess.py"", line 1026, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+  File ""C:\Program Files\Python312\Lib\subprocess.py"", line 1538, in _execute_child
+    hp, ht, pid, tid = _winapi.CreateProcess(executable, args,
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [WinError 2] The system cannot find the file specified
+",7,,,,,"Detect and remediate drift for CloudFormation stack MyStack in us-east-1.
+Scenario details:
+- testId: HIGH-002
+- category: Termination Protection Off
+- severity: High
+- command: ModifyInstanceAttribute
+- parameters: {""InstanceId"":""${INSTANCE_ID}"",""DisableApiTermination"":{""Value"":false}}
+- description: Disable termination protection
+- reversible: True",2026-03-15T15:14:18.857643+00:00
+SUMMARY,,,,,summary,0.0000,,,,,,,,2026-03-15T15:14:18.865684+00:00

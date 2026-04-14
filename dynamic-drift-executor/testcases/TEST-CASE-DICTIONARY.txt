@@ -1,0 +1,775 @@
+=================================================================================
+EC2 DRIFT TEST CASE DICTIONARY
+=================================================================================
+Total Test Cases: 150
+Generated: February 2026
+Purpose: CloudFormation Drift Detection Testing
+=================================================================================
+
+SEVERITY DISTRIBUTION:
+  🔴 High:     20 test cases (HIGH-001 to HIGH-020)
+  🟡 Moderate: 44 test cases (MOD-001 to MOD-044)
+  🟢 Low:      25 test cases (LOW-001 to LOW-025)
+
+=================================================================================
+🔴 HIGH SEVERITY TEST CASES (20)
+=================================================================================
+
+HIGH-001: EC2 Instance Deleted
+  Category: EC2 Instance Deleted
+  Command: TerminateInstances
+  Description: Terminate EC2 instance completely
+  Reversible: NO
+  Requires Stop: NO
+  Impact: Complete service outage, data loss
+
+HIGH-002: Termination Protection Off
+  Category: Termination Protection Off
+  Command: ModifyInstanceAttribute
+  Description: Disable termination protection
+  Reversible: YES
+  Requires Stop: NO
+  Impact: Instance vulnerable to accidental deletion
+
+HIGH-003: Security Group Opened - SSH
+  Category: Security Group Opened
+  Command: ModifyInstanceAttribute
+  Description: Attach security group with SSH port 22 open to 0.0.0.0/0
+  Reversible: YES
+  Requires Stop: NO
+  Impact: Critical security vulnerability
+
+HIGH-004: Security Group Opened - RDP
+  Category: Security Group Opened
+  Command: ModifyInstanceAttribute
+  Description: Attach security group with RDP port 3389 open to internet
+  Reversible: YES
+  Requires Stop: NO
+  Impact: Critical security vulnerability
+
+HIGH-005: Security Group Opened - All Ports
+  Category: Security Group Opened
+  Command: ModifyInstanceAttribute
+  Description: Attach security group with all ports open to 0.0.0.0/0
+  Reversible: YES
+  Requires Stop: NO
+  Impact: Maximum security exposure
+
+HIGH-006: IAM Instance Profile Removed
+  Category: IAM Instance Profile Changed
+  Command: DisassociateIamInstanceProfile
+  Description: Remove IAM instance profile completely
+  Reversible: YES
+  Requires Stop: NO
+  Impact: Application loses AWS service access
+
+HIGH-007: IAM Instance Profile - Admin Access
+  Category: IAM Instance Profile Changed
+  Command: AssociateIamInstanceProfile
+  Description: Replace with admin access IAM profile
+  Reversible: YES
+  Requires Stop: NO
+  Impact: Excessive permissions, security risk
+
+HIGH-008: Metadata Service Downgrade to V1
+  Category: Metadata Service V1 Enabled
+  Command: ModifyInstanceMetadataOptions
+  Description: Enable IMDSv1 (downgrade from IMDSv2)
+  Reversible: YES
+  Requires Stop: NO
+  Impact: SSRF vulnerability exposure
+
+HIGH-009: Metadata Service V1 + High Hop Limit
+  Category: Metadata Service V1 Enabled
+  Command: ModifyInstanceMetadataOptions
+  Description: Enable IMDSv1 and increase hop limit to 64
+  Reversible: YES
+  Requires Stop: NO
+  Impact: Extended SSRF attack surface
+
+HIGH-010: Detailed Monitoring Disabled
+  Category: Detailed Monitoring Disabled
+  Command: UnmonitorInstances
+  Description: Disable CloudWatch detailed monitoring
+  Reversible: YES
+  Requires Stop: NO
+  Impact: Reduced visibility, delayed incident detection
+
+HIGH-011: Source/Dest Check Disabled
+  Category: Source/Dest Check Disabled
+  Command: ModifyInstanceAttribute
+  Description: Disable source/destination check (NAT mode)
+  Reversible: YES
+  Requires Stop: NO
+  Impact: Instance can route traffic, security risk
+
+HIGH-012: User Data - Malicious Script
+  Category: User Data Modified
+  Command: ModifyInstanceAttribute
+  Description: Change user data to potentially malicious script
+  Reversible: YES
+  Requires Stop: YES
+  Impact: Code injection on next boot
+
+HIGH-013: User Data Cleared
+  Category: User Data Modified
+  Command: ModifyInstanceAttribute
+  Description: Clear user data completely
+  Reversible: YES
+  Requires Stop: YES
+  Impact: Initialization scripts lost
+
+HIGH-014: Public IP Assignment
+  Category: Public IP Assigned
+  Command: AssociateAddress
+  Description: Assign Elastic IP to private instance
+  Reversible: YES
+  Requires Stop: NO
+  Impact: Private instance exposed to internet
+
+HIGH-015: Unencrypted EBS Volume
+  Category: EBS Encryption Disabled
+  Command: CreateVolume
+  Description: Create and attach unencrypted EBS volume
+  Reversible: YES
+  Requires Stop: NO
+  Impact: Data confidentiality compromised
+
+HIGH-016: Network Interface Detached
+  Category: Network Interface Detached
+  Command: DetachNetworkInterface
+  Description: Detach secondary network interface
+  Reversible: YES
+  Requires Stop: NO
+  Impact: Network connectivity loss
+
+HIGH-017: Subnet Changed
+  Category: Subnet Changed
+  Command: CreateNetworkInterface
+  Description: Move instance to different subnet (via new ENI)
+  Reversible: YES
+  Requires Stop: NO
+  Impact: Network routing and security posture changed
+
+HIGH-018: Tenancy - Dedicated Host
+  Category: Tenancy Changed
+  Command: ModifyInstancePlacement
+  Description: Change from default to dedicated host tenancy
+  Reversible: YES
+  Requires Stop: YES
+  Impact: Compliance and cost implications
+
+HIGH-019: Tenancy - Dedicated
+  Category: Tenancy Changed
+  Command: ModifyInstancePlacement
+  Description: Change from default to dedicated tenancy
+  Reversible: YES
+  Requires Stop: YES
+  Impact: Increased cost, compliance change
+
+HIGH-020: Nitro Enclave Disabled
+  Category: Nitro Enclave Disabled
+  Command: ModifyInstanceAttribute
+  Description: Disable Nitro Enclave security feature
+  Reversible: YES
+  Requires Stop: YES
+  Impact: Hardware security isolation removed
+
+=================================================================================
+🟡 MODERATE SEVERITY TEST CASES (44)
+=================================================================================
+
+MOD-001: Instance Type - t3.small
+  Category: Instance Size/Type Changed
+  Command: ModifyInstanceAttribute
+  Description: Change from t3.micro to t3.small
+  Reversible: YES
+  Requires Stop: YES
+  Impact: Cost increase, performance change
+
+MOD-002: Instance Type - t3.medium
+  Category: Instance Size/Type Changed
+  Command: ModifyInstanceAttribute
+  Description: Change from t3.micro to t3.medium
+  Reversible: YES
+  Requires Stop: YES
+  Impact: 2x cost increase, better performance
+
+MOD-003: Instance Type - t3.large
+  Category: Instance Size/Type Changed
+  Command: ModifyInstanceAttribute
+  Description: Change from t3.micro to t3.large
+  Reversible: YES
+  Requires Stop: YES
+  Impact: 4x cost increase, significant performance boost
+
+MOD-004: Instance Type - t3.nano (Downgrade)
+  Category: Instance Size/Type Changed
+  Command: ModifyInstanceAttribute
+  Description: Downgrade from t3.micro to t3.nano
+  Reversible: YES
+  Requires Stop: YES
+  Impact: Cost savings, reduced performance
+
+MOD-005: Instance Type - AMD (t3a)
+  Category: Instance Size/Type Changed
+  Command: ModifyInstanceAttribute
+  Description: Change from t3 to t3a family (AMD)
+  Reversible: YES
+  Requires Stop: YES
+  Impact: Cost savings, slight performance difference
+
+MOD-006: AMI Changed
+  Category: AMI Changed
+  Command: ModifyInstanceAttribute
+  Description: Change to different AMI (requires termination and recreate)
+  Reversible: NO
+  Requires Stop: YES
+  Impact: Complete instance rebuild required
+
+MOD-007: EBS Volume Attached
+  Category: EBS Volume Attached/Detached
+  Command: AttachVolume
+  Description: Attach additional EBS volume
+  Reversible: YES
+  Requires Stop: NO
+  Impact: Storage configuration changed
+
+MOD-008: EBS Volume Detached
+  Category: EBS Volume Attached/Detached
+  Command: DetachVolume
+  Description: Detach EBS volume
+  Reversible: YES
+  Requires Stop: NO
+  Impact: Storage loss, application may fail
+
+MOD-009: EBS Volume Size - 20GB
+  Category: EBS Volume Size Changed
+  Command: ModifyVolume
+  Description: Expand root volume from 8GB to 20GB
+  Reversible: NO
+  Requires Stop: NO
+  Impact: Increased storage, cannot shrink
+
+MOD-010: EBS Volume Size - 50GB
+  Category: EBS Volume Size Changed
+  Command: ModifyVolume
+  Description: Expand root volume from 8GB to 50GB
+  Reversible: NO
+  Requires Stop: NO
+  Impact: Significant storage increase, cost impact
+
+MOD-011: EBS Type - gp3
+  Category: EBS Volume Type Changed
+  Command: ModifyVolume
+  Description: Change from gp2 to gp3
+  Reversible: YES
+  Requires Stop: NO
+  Impact: Better performance/price ratio
+
+MOD-012: EBS Type - io1 (Provisioned IOPS)
+  Category: EBS Volume Type Changed
+  Command: ModifyVolume
+  Description: Change from gp2 to io1 (provisioned IOPS)
+  Reversible: YES
+  Requires Stop: NO
+  Impact: High performance, higher cost
+
+MOD-013: EBS Type - io2
+  Category: EBS Volume Type Changed
+  Command: ModifyVolume
+  Description: Change from gp2 to io2
+  Reversible: YES
+  Requires Stop: NO
+  Impact: Highest performance, premium cost
+
+MOD-014: EBS IOPS Increase
+  Category: EBS IOPS/Throughput Modified
+  Command: ModifyVolume
+  Description: Increase IOPS from 3000 to 5000
+  Reversible: YES
+  Requires Stop: NO
+  Impact: Better I/O performance, cost increase
+
+MOD-015: EBS Throughput Increase
+  Category: EBS IOPS/Throughput Modified
+  Command: ModifyVolume
+  Description: Increase throughput to 500 MiB/s
+  Reversible: YES
+  Requires Stop: NO
+  Impact: Faster data transfer, cost impact
+
+MOD-016: EBS IOPS Decrease
+  Category: EBS IOPS/Throughput Modified
+  Command: ModifyVolume
+  Description: Decrease IOPS from 3000 to 1000
+  Reversible: YES
+  Requires Stop: NO
+  Impact: Reduced performance, cost savings
+
+MOD-017: Create AMI for Migration
+  Category: Availability Zone Changed
+  Command: CreateImage
+  Description: Create AMI for AZ migration (step 1)
+  Reversible: NO
+  Requires Stop: NO
+  Impact: Preparation for AZ change
+
+MOD-018: Placement Group Added
+  Category: Placement Group Modified
+  Command: ModifyInstancePlacement
+  Description: Add instance to placement group
+  Reversible: YES
+  Requires Stop: YES
+  Impact: Network latency optimization
+
+MOD-019: Placement Group Removed
+  Category: Placement Group Modified
+  Command: ModifyInstancePlacement
+  Description: Remove instance from placement group
+  Reversible: YES
+  Requires Stop: YES
+  Impact: Lose low-latency benefits
+
+MOD-020: Placement Group Changed
+  Category: Placement Group Modified
+  Command: ModifyInstancePlacement
+  Description: Move to different placement group
+  Reversible: YES
+  Requires Stop: YES
+  Impact: Different network locality
+
+MOD-021: Secondary IP - Single
+  Category: Secondary Private IP Added
+  Command: AssignPrivateIpAddresses
+  Description: Add secondary private IP 10.0.1.100
+  Reversible: YES
+  Requires Stop: NO
+  Impact: Additional network endpoint
+
+MOD-022: Secondary IP - Auto Assign 2
+  Category: Secondary Private IP Added
+  Command: AssignPrivateIpAddresses
+  Description: Add 2 secondary private IPs automatically
+  Reversible: YES
+  Requires Stop: NO
+  Impact: Multiple network endpoints
+
+MOD-023: Secondary IP - Multiple Manual
+  Category: Secondary Private IP Added
+  Command: AssignPrivateIpAddresses
+  Description: Add multiple secondary IPs
+  Reversible: YES
+  Requires Stop: NO
+  Impact: Complex network configuration
+
+MOD-024: Elastic IP Associated
+  Category: Elastic IP Associated
+  Command: AssociateAddress
+  Description: Associate Elastic IP
+  Reversible: YES
+  Requires Stop: NO
+  Impact: Static public IP, potential connectivity change
+
+MOD-025: Elastic IP Disassociated
+  Category: Elastic IP Disassociated
+  Command: DisassociateAddress
+  Description: Remove Elastic IP association
+  Reversible: YES
+  Requires Stop: NO
+  Impact: Public IP changes or removed
+
+MOD-026: Security Group Replacement
+  Category: Security Group Modified
+  Command: ModifyInstanceAttribute
+  Description: Replace with different security group
+  Reversible: YES
+  Requires Stop: NO
+  Impact: Firewall rules changed
+
+MOD-027: Security Group Addition
+  Category: Security Group Modified
+  Command: ModifyInstanceAttribute
+  Description: Add additional security group
+  Reversible: YES
+  Requires Stop: NO
+  Impact: Additional firewall rules
+
+MOD-028: Security Group Removal
+  Category: Security Group Modified
+  Command: ModifyInstanceAttribute
+  Description: Remove one security group (keep primary)
+  Reversible: YES
+  Requires Stop: NO
+  Impact: Reduced firewall rules
+
+MOD-029: CPU Credits - Unlimited
+  Category: Credit Specification Changed
+  Command: ModifyInstanceCreditSpecification
+  Description: Enable unlimited CPU credits
+  Reversible: YES
+  Requires Stop: NO
+  Impact: Better burst performance, potential cost increase
+
+MOD-030: CPU Credits - Standard
+  Category: Credit Specification Changed
+  Command: ModifyInstanceCreditSpecification
+  Description: Change to standard CPU credits
+  Reversible: YES
+  Requires Stop: NO
+  Impact: Limited burst capacity
+
+MOD-031: Hibernation Enabled
+  Category: Hibernation Enabled/Disabled
+  Command: ModifyInstanceAttribute
+  Description: Enable hibernation
+  Reversible: YES
+  Requires Stop: YES
+  Impact: Faster restart, memory preserved
+
+MOD-032: Hibernation Disabled
+  Category: Hibernation Enabled/Disabled
+  Command: ModifyInstanceAttribute
+  Description: Disable hibernation
+  Reversible: YES
+  Requires Stop: YES
+  Impact: Standard stop/start behavior
+
+MOD-033: Detailed Monitoring Enabled
+  Category: Monitoring Interval Changed
+  Command: MonitorInstances
+  Description: Enable detailed monitoring (1-min intervals)
+  Reversible: YES
+  Requires Stop: NO
+  Impact: Better visibility, cost increase
+
+MOD-034: Basic Monitoring
+  Category: Monitoring Interval Changed
+  Command: UnmonitorInstances
+  Description: Switch to basic monitoring (5-min intervals)
+  Reversible: YES
+  Requires Stop: NO
+  Impact: Reduced granularity, cost savings
+
+MOD-035: Metadata Hop Limit - 2
+  Category: Instance Metadata Options
+  Command: ModifyInstanceMetadataOptions
+  Description: Change metadata hop limit to 2
+  Reversible: YES
+  Requires Stop: NO
+  Impact: Metadata access from containers
+
+MOD-036: Metadata Hop Limit - 3
+  Category: Instance Metadata Options
+  Command: ModifyInstanceMetadataOptions
+  Description: Change metadata hop limit to 3
+  Reversible: YES
+  Requires Stop: NO
+  Impact: Extended metadata reach
+
+MOD-037: Metadata Service Disabled
+  Category: Instance Metadata Options
+  Command: ModifyInstanceMetadataOptions
+  Description: Disable metadata service entirely
+  Reversible: YES
+  Requires Stop: NO
+  Impact: Applications lose metadata access
+
+MOD-038: Metadata Tags Enabled
+  Category: Instance Metadata Options
+  Command: ModifyInstanceMetadataOptions
+  Description: Enable instance metadata tags
+  Reversible: YES
+  Requires Stop: NO
+  Impact: Tags accessible via metadata
+
+MOD-039: Capacity Reservation Added
+  Category: Capacity Reservation
+  Command: ModifyInstanceCapacityReservationAttributes
+  Description: Add to capacity reservation
+  Reversible: YES
+  Requires Stop: NO
+  Impact: Guaranteed capacity, billing change
+
+MOD-040: Capacity Reservation Removed
+  Category: Capacity Reservation
+  Command: ModifyInstanceCapacityReservationAttributes
+  Description: Remove from capacity reservation
+  Reversible: YES
+  Requires Stop: NO
+  Impact: No guaranteed capacity
+
+MOD-041: CPU Topology - 1 Core 1 Thread
+  Category: CPU Options Changed
+  Command: ModifyInstanceAttribute
+  Description: Change CPU topology (1 core, 1 thread)
+  Reversible: YES
+  Requires Stop: YES
+  Impact: Licensing implications
+
+MOD-042: CPU Topology - 1 Core 2 Threads
+  Category: CPU Options Changed
+  Command: ModifyInstanceAttribute
+  Description: Change CPU topology (1 core, 2 threads)
+  Reversible: YES
+  Requires Stop: YES
+  Impact: Different CPU configuration
+
+MOD-043: Kernel ID Changed
+  Category: Kernel ID Changed
+  Command: ModifyInstanceAttribute
+  Description: Change kernel ID
+  Reversible: YES
+  Requires Stop: YES
+  Impact: Boot process affected
+
+MOD-044: RAM Disk ID Changed
+  Category: RAM Disk ID Changed
+  Command: ModifyInstanceAttribute
+  Description: Change RAM disk ID
+  Reversible: YES
+  Requires Stop: YES
+  Impact: Boot configuration changed
+
+=================================================================================
+🟢 LOW SEVERITY TEST CASES (25)
+=================================================================================
+
+LOW-001: Name Tag with Timestamp
+  Category: Instance Name Tag Changed
+  Command: CreateTags
+  Description: Change instance name tag with timestamp
+  Reversible: YES
+  Requires Stop: NO
+  Impact: Minimal - identification only
+
+LOW-002: Name Tag Cleared
+  Category: Instance Name Tag Changed
+  Command: CreateTags
+  Description: Clear instance name (empty string)
+  Reversible: YES
+  Requires Stop: NO
+  Impact: Minimal - lost identification
+
+LOW-003: Very Long Name Tag
+  Category: Instance Name Tag Changed
+  Command: CreateTags
+  Description: Set very long instance name (150 chars)
+  Reversible: YES
+  Requires Stop: NO
+  Impact: Minimal - UI display issues
+
+LOW-004: Simple Name Change
+  Category: Instance Name Tag Changed
+  Command: CreateTags
+  Description: Simple name change
+  Reversible: YES
+  Requires Stop: NO
+  Impact: Minimal - identification change
+
+LOW-005: Production Naming Convention
+  Category: Instance Name Tag Changed
+  Command: CreateTags
+  Description: Change to production naming convention
+  Reversible: YES
+  Requires Stop: NO
+  Impact: Minimal - naming standard alignment
+
+LOW-006: Environment Tag Added
+  Category: Tag Added/Modified
+  Command: CreateTags
+  Description: Add Environment tag
+  Reversible: YES
+  Requires Stop: NO
+  Impact: Minimal - organization/tracking
+
+LOW-007: Owner Tag Added
+  Category: Tag Added/Modified
+  Command: CreateTags
+  Description: Add Owner tag
+  Reversible: YES
+  Requires Stop: NO
+  Impact: Minimal - ownership tracking
+
+LOW-008: CostCenter Tag Added
+  Category: Tag Added/Modified
+  Command: CreateTags
+  Description: Add CostCenter tag with timestamp
+  Reversible: YES
+  Requires Stop: NO
+  Impact: Minimal - cost allocation
+
+LOW-009: Project Tag Added
+  Category: Tag Added/Modified
+  Command: CreateTags
+  Description: Add Project tag
+  Reversible: YES
+  Requires Stop: NO
+  Impact: Minimal - project tracking
+
+LOW-010: Backup Tag Added
+  Category: Tag Added/Modified
+  Command: CreateTags
+  Description: Add Backup schedule tag
+  Reversible: YES
+  Requires Stop: NO
+  Impact: Minimal - backup automation hint
+
+LOW-011: Compliance Tag Added
+  Category: Tag Added/Modified
+  Command: CreateTags
+  Description: Add Compliance tag
+  Reversible: YES
+  Requires Stop: NO
+  Impact: Minimal - compliance tracking
+
+LOW-012: ManagedBy Tag Added
+  Category: Tag Added/Modified
+  Command: CreateTags
+  Description: Add ManagedBy tag
+  Reversible: YES
+  Requires Stop: NO
+  Impact: Minimal - management tracking
+
+LOW-013: Description Tag Added
+  Category: Tag Added/Modified
+  Command: CreateTags
+  Description: Add Description tag
+  Reversible: YES
+  Requires Stop: NO
+  Impact: Minimal - documentation
+
+LOW-014: AutoShutdown Tag Added
+  Category: Tag Added/Modified
+  Command: CreateTags
+  Description: Add AutoShutdown automation tag
+  Reversible: YES
+  Requires Stop: NO
+  Impact: Minimal - automation hint (may affect automation)
+
+LOW-015: Multiple Tags Added
+  Category: Tag Added/Modified
+  Command: CreateTags
+  Description: Add multiple tags at once
+  Reversible: YES
+  Requires Stop: NO
+  Impact: Minimal - batch organization
+
+LOW-016: Environment Tag Modified
+  Category: Tag Added/Modified
+  Command: CreateTags
+  Description: Modify existing Environment tag
+  Reversible: YES
+  Requires Stop: NO
+  Impact: Minimal - tracking update
+
+LOW-017: DriftTest Flag Added
+  Category: Tag Added/Modified
+  Command: CreateTags
+  Description: Add drift testing flag
+  Reversible: YES
+  Requires Stop: NO
+  Impact: Minimal - testing marker
+
+LOW-018: Environment Tag Removed
+  Category: Tag Removed
+  Command: DeleteTags
+  Description: Remove Environment tag
+  Reversible: YES
+  Requires Stop: NO
+  Impact: Minimal - lost organization
+
+LOW-019: Owner Tag Removed
+  Category: Tag Removed
+  Command: DeleteTags
+  Description: Remove Owner tag
+  Reversible: YES
+  Requires Stop: NO
+  Impact: Minimal - lost ownership tracking
+
+LOW-020: CostCenter Tag Removed
+  Category: Tag Removed
+  Command: DeleteTags
+  Description: Remove CostCenter tag
+  Reversible: YES
+  Requires Stop: NO
+  Impact: Minimal - lost cost allocation
+
+LOW-021: Project Tag Removed
+  Category: Tag Removed
+  Command: DeleteTags
+  Description: Remove Project tag
+  Reversible: YES
+  Requires Stop: NO
+  Impact: Minimal - lost project tracking
+
+LOW-022: DriftTest Tag Removed
+  Category: Tag Removed
+  Command: DeleteTags
+  Description: Remove drift test tag
+  Reversible: YES
+  Requires Stop: NO
+  Impact: Minimal - testing cleanup
+
+LOW-023: Multiple Tags Removed
+  Category: Tag Removed
+  Command: DeleteTags
+  Description: Remove multiple tags at once
+  Reversible: YES
+  Requires Stop: NO
+  Impact: Minimal - batch cleanup
+
+LOW-024: Description Updated
+  Category: Description Changed
+  Command: CreateTags
+  Description: Update instance description
+  Reversible: YES
+  Requires Stop: NO
+  Impact: Minimal - documentation update
+
+LOW-025: Description Cleared
+  Category: Description Changed
+  Command: CreateTags
+  Description: Clear description
+  Reversible: YES
+  Requires Stop: NO
+  Impact: Minimal - lost documentation
+
+=================================================================================
+USAGE NOTES
+=================================================================================
+
+VARIABLES USED IN SCENARIOS:
+  ${INSTANCE_ID}            - Target EC2 instance ID
+  ${TIMESTAMP}              - Current Unix timestamp
+  ${ORIGINAL_NAME}          - Original instance name
+  ${OPEN_SECURITY_GROUP}    - SG with SSH open to 0.0.0.0/0
+  ${RDP_OPEN_SG}           - SG with RDP open to internet
+  ${ALL_PORTS_OPEN_SG}     - SG with all ports open
+  ${IAM_ASSOCIATION_ID}    - Current IAM profile association
+  ${ADMIN_PROFILE_ARN}     - ARN of admin IAM profile
+  ${EIP_ALLOCATION_ID}     - Elastic IP allocation ID
+  ${AZ}                    - Availability zone
+  ${ENI_ATTACHMENT_ID}     - Network interface attachment ID
+  ${DIFFERENT_SUBNET}      - Alternative subnet ID
+  ${SECURITY_GROUP}        - Security group ID
+  ${NEW_AMI_ID}           - Alternative AMI ID
+  ${ADDITIONAL_VOLUME_ID}  - Extra EBS volume ID
+  ${ATTACHED_VOLUME_ID}    - Currently attached volume ID
+  ${ROOT_VOLUME_ID}        - Root EBS volume ID
+  ${PLACEMENT_GROUP_NAME}  - Placement group name
+  ${ENI_ID}               - Elastic network interface ID
+  ${RESERVATION_ID}        - Capacity reservation ID
+  ${NEW_KERNEL_ID}        - Alternative kernel ID
+  ${NEW_RAMDISK_ID}       - Alternative ramdisk ID
+
+TESTING RECOMMENDATIONS:
+  1. Start with LOW severity tests (safe, tag-only changes)
+  2. Then try MODERATE severity (requires stop, but reversible)
+  3. Finally HIGH severity (in test environment only!)
+  4. Never run HIGH-001 (instance termination) in production
+  5. Some tests require placeholder values (SG IDs, Volume IDs, etc.)
+
+=================================================================================
+END OF DICTIONARY
+=================================================================================
