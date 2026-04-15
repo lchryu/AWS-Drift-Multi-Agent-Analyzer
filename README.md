@@ -30,6 +30,10 @@ I acted as the final "gatekeeper," making sure the product didn't just run, but 
 
 - **Connecting the AI Chat Interface**: I built the bridge that allows the AI to talk to the user. My specific work included:
     - **Security-First Architecture**: Following VS Code best practices, I designed the system so that the chat interface does not call the API directly. Instead, it sends messages to the extension backend, which then handles the actual data requests to AWS Lambda. This multi-step "proxy" flow (UI → Extension → Cloud → Extension → UI) ensures a more secure and stable connection.
+    
+    ![AI Chat Implementation Commit](path/to/commit_screenshot.png)
+    *Figure 1: Proof of the AI Chat backend connection and VS Code architecture implementation.*
+
     - **Setting up the Chat Connection**: Made sure the communication between the user and the cloud API was stable and fast, handling real-time data flows effectively.
     - **Improving User Experience**: Added a "Thinking..." status so users know the AI is working, and made the chat window automatically scroll to the newest message.
     - **Fixing Visual Issues**: Solved problems with how the chat window looked and behaved, making it match the user's VS Code theme (Light or Dark mode).
@@ -37,6 +41,10 @@ I acted as the final "gatekeeper," making sure the product didn't just run, but 
 - **Creating Demo Videos**: I wrote the scripts and recorded the demo videos to show how the system works. I made sure complex AI features were explained in a simple and convincing way for the audience.
 - **Data & History Management**: I helped test the system that saves chat history, making sure that users never lose their conversations.
 - **Voice Assistant R&D (Research & Development)**: I spearheaded the research into voice-controlled interactions using the Web Speech API. Although the feature faced hard "not-allowed" permission blocks from the Windows OS within the VS Code environment, my research documented these technical boundaries and proposed alternative authentication flows for future investigation.
+
+    ![Voice Assistant Prototype](path/to/voice_button_screenshot.png)
+    *Figure 2: Prototype of the Voice-to-Text button and the permission error handling interface.*
+
 - **Iterative Feedback Loop**: I served as the primary internal reviewer for the group's code. By providing detailed feedback on the Agent's response quality and classification logic, I ensured the product evolved through multiple iterations into a more polished state.
 
 ## 5. REFLECTION ON INDIVIDUAL SKILL DEVELOPMENT
