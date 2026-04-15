@@ -1,43 +1,55 @@
 # Reflection Report
 
-**Unit code:** COS40006  
+**Unit Code:** COS40006  
 **Unit Name:** Computing Technology Project B  
-**Submission date:** 14/04/2026
+**Submission Date:** 14/04/2026
 
 ---
 
-## 1. EXECUTIVE SUMMARY (TÓM TẮT DỰ ÁN)
-Dự án Drift Analyzer tập trung vào việc giải quyết bài toán **Drift** — sự sai lệch giữa cấu hình hạ tầng trong các bản thiết kế (thường là các template CloudFormation lưu tại local) và trạng thái thực tế của các tài nguyên đang chạy trên nền tảng **AWS**. Mục tiêu cốt lõi của dự án là xây dựng một **VS Code Extension** tích hợp hệ thống **Multi-Agent** thông minh để giúp lập trình viên và quản trị viên hệ thống phát hiện, phân tích và tự động đồng bộ hạ tầng. 
+## 1. EXECUTIVE SUMMARY
+This project focuses on detecting and fixing **Drift**—the difference between local infrastructure settings and the actual state on **AWS**. Our goal was to build a **VS Code Extension** powered by a **Multi-Agent** AI system. It helps users through three main features: **Ask** (Queries), **Classification** (Error analysis), and **Agent** (Automatic fixes).
 
-Hệ thống cung cấp 3 chế độ vận hành chính: 
-1. **Ask mode**: Giúp nhanh chóng truy vấn thông tin và trạng thái hiện tại của tài nguyên. 
-2. **Classification mode**: Tự động phân loại mức độ nghiêm trọng của sai lệch và xác định nguyên nhân gốc rễ. 
-3. **Agent mode**: Chế độ tự động hoàn toàn, nơi các Agent phối hợp để lập kế hoạch sửa lỗi, thực thi và kiểm chứng kết quả. 
+In this project, my role was focused on **testing the system, finding and fixing bugs, creating demo videos, and writing technical reports**. This report describes my journey in ensuring the project works correctly and is easy for users to understand.
 
-Trong dự án này, tôi đảm nhận vai trò chủ chốt trong việc kiểm thử (Testing), khắc phục các lỗi vận hành (Debugging) và xây dựng bộ tài liệu thuyết minh kỹ thuật cho toàn bộ hệ thống.
+## 2. REFLECTION ON INDIVIDUAL ACHIEVEMENTS
+My biggest achievement was quickly learning new technologies to contribute to the team.
+- **Mastering Cloud Tools**: even though I was new to AWS, I learned how to use industrial tools to detect "Drift" and understood how infrastructure works in the cloud.
+- **System Design Contribution**: I actively participated in planning sessions to define how the **Ask, Classification, and Agent** modes should work, ensuring the tool actually solves real user problems.
+- **Efficiency through AI & Deep Research**: Using the latest AI tools and performing deep dives into technical documentation helped me learn much faster than expected. I served as a "knowledge bridge" for the team, summarizing complex AWS and VS Code concepts into actionable tasks.
+- **Collaborative Planning**: I was a key participant in our weekly Sprint planning and design sessions. By providing regular feedback on the system's usability, I helped the team refine the AI's behavior to better match user expectations.
 
-## 2. REFLECTION ON INDIVIDUAL ACHIEVEMENTS (PHẢN HỒI VỀ THÀNH TỰU CÁ NHÂN)
-Thành tựu lớn nhất của tôi là đảm bảo được tính chính xác và tin cậy của quy trình phát hiện sai lệch hạ tầng thông qua kiểm thử thực tế.
-- **Xây dựng quy trình xác thực hạ tầng**: Tôi đã nắm vững cách thức phát hiện "Drift" bằng cách so sánh trực tiếp cấu hình kỳ vọng trong template local với trạng thái tài nguyên trên AWS.
-- **Hoàn thiện tài liệu thuật ngữ và vận hành**: Tôi đã hệ thống hóa các khái niệm kỹ thuật phức tạp thành các tài liệu dễ hiểu (`project_overview.md`) và xây dựng kịch bản demo (`thuyet_minh.md`), giúp làm rõ vai trò của từng chế độ Ask, Classification và Agent đối với người dùng cuối.
-- **Kiểm định sự thông minh của AI**: Tôi đã thành công trong việc thiết lập các bài testcase để "bắt lỗi" AI, giúp tối ưu hóa khả năng phản hồi của các Agent Researcher và Executor.
+## 3. REFLECTION ON INDIVIDUAL CHALLENGES
+This project came with several personal and technical hurdles:
+- **Learning Curve for Web and Cloud**: Since I didn't have a background in Web or AWS programming, starting a complex project like "Drift Analyzer" was stressful. I spent a lot of time learning how to use AWS services and understanding the security rules of VS Code.
+- **Technical Hurdles**: A major challenge was making sure the chat window could properly show images and styles. Setting up the connection between the interface and the background logic required a lot of trial and error to get right.
+- **Device Access Issues**: While researching a **Voice-to-Text** feature to help users talk to the AI, I ran into a wall with Windows permissions. Even though I set everything up, the operating system blocked the microphone access for VS Code, which is a common security restriction I couldn't bypass in the given time.
+- **Time Management**: Balancing learning new technologies while meeting team deadlines required a lot of self-discipline.
 
-## 3. REFLECTION ON INDIVIDUAL CHALLENGES (PHẢN HỒI VỀ THÁCH THỨC CÁ NHÂN)
-Tôi đã phải vượt qua nhiều rào cản kỹ thuật để đảm bảo hệ thống vận hành trơn tru:
-- **Lỗi xác thực và khớp nối API**: Một trong những thách thức lớn là lỗi `InvalidClientTokenId`. Đây là lỗi nảy sinh khi extension cố gắng kết nối với AWS nhưng thông tin cấu hình local không khớp hoặc hết hạn. Tôi đã phải nghiên cứu sâu về cơ chế xác thực của AWS SDK để tìm ra phương án xử lý lỗi này triệt để.
-- **Vấn đề AI ảo giác (Hallucination)**: Trong quá trình test, AI thỉnh thoảng đề xuất dựa trên các thông số cấu hình không có thực. Để giải quyết, tôi đã phối hợp để tích hợp công cụ **SearXNG** chạy local, giúp Agent có thể tra cứu tài liệu AWS chính xác trước khi so sánh với cấu hình local.
-- **Tối ưu hóa UI cho các thông tin phức tạp**: Việc hiển thị các bảng so sánh sai lệch tài nguyên đòi hỏi sự tỉ mỉ trong việc thiết kế webview để người dùng có thể nhận diện lỗi ngay lập tức.
+## 4. REFLECTION ON INDIVIDUAL CONTRIBUTION
+I acted as the final "gatekeeper," making sure the product didn't just run, but worked correctly in real-life scenarios:
 
-## 4. REFLECTION ON INDIVIDUAL CONTRIBUTION (PHẢN HỒI VỀ ĐÓNG GÓP CÁ NHÂN)
-Tôi đóng vai trò là "người gác cổng" về chất lượng (QA) và là "người truyền đạt" (Thuyết minh) cho dự án:
-- **Chuyên gia Debugging & Testing**: Tôi trực tiếp thực hiện việc giả lập sai lệch hạ tầng (như thay đổi Tag, Name hay Security Groups thủ công trên AWS console) để kiểm tra xem Extension có phát hiện đúng so với cấu hình local hay không. Tôi đã fix nhiều lỗi liên quan đến việc xử lý dữ liệu từ AWS trả về.
-- **Xây dựng kịch bản Thuyết minh (Presentation)**: Tôi chịu trách nhiệm viết kịch bản hướng dẫn người dùng qua 3 chế độ Ask, Classification và Agent. Tôi đảm bảo rằng các tính năng phức tạp của Multi-Agent được giải thích một cách súc tích và mạch lạc.
-- **Quản lý dữ liệu người dùng**: Tôi đã kiểm thử hệ thống quản lý hội thoại (Conversation Management) sử dụng SQLite, đảm bảo việc lưu trữ và truy xuất lịch sử chat giữa người dùng và Agent luôn chính xác và an toàn.
+- **Connecting the AI Chat Interface**: I built the bridge that allows the AI to talk to the user. My specific work included:
+    - **Security-First Architecture**: Following VS Code best practices, I designed the system so that the chat interface does not call the API directly. Instead, it sends messages to the extension backend, which then handles the actual data requests to AWS Lambda. This multi-step "proxy" flow (UI → Extension → Cloud → Extension → UI) ensures a more secure and stable connection.
+    - **Setting up the Chat Connection**: Made sure the communication between the user and the cloud API was stable and fast, handling real-time data flows effectively.
+    - **Improving User Experience**: Added a "Thinking..." status so users know the AI is working, and made the chat window automatically scroll to the newest message.
+    - **Fixing Visual Issues**: Solved problems with how the chat window looked and behaved, making it match the user's VS Code theme (Light or Dark mode).
+- **Real-world Testing**: This was my most hands-on contribution. I manually created errors on AWS to see if our AI could find them. I reported every logic error I found to the team so we could fix them.
+- **Creating Demo Videos**: I wrote the scripts and recorded the demo videos to show how the system works. I made sure complex AI features were explained in a simple and convincing way for the audience.
+- **Data & History Management**: I helped test the system that saves chat history, making sure that users never lose their conversations.
+- **Voice Assistant R&D (Research & Development)**: I spearheaded the research into voice-controlled interactions using the Web Speech API. Although the feature faced hard "not-allowed" permission blocks from the Windows OS within the VS Code environment, my research documented these technical boundaries and proposed alternative authentication flows for future investigation.
+- **Iterative Feedback Loop**: I served as the primary internal reviewer for the group's code. By providing detailed feedback on the Agent's response quality and classification logic, I ensured the product evolved through multiple iterations into a more polished state.
 
-## 5. REFLECTION ON INDIVIDUAL SKILL DEVELOPMENT (PHẢN HỒI VỀ PHÁT TRIỂN KỸ NĂNG)
-- **Kỹ năng chuyên môn**: Nâng cao kỹ năng kiểm thử hệ thống Cloud (AWS), hiểu biết sâu về Infrastructure as Code (IaC) và cách tối ưu hóa LLM Agents thông qua SearXNG.
-- **Kỹ năng Technical Writing**: Phát triển khả năng viết tài liệu kỹ thuật chuyên nghiệp, biến các quy trình AI Agent phức tạp thành các hướng dẫn vận hành đơn giản.
-- **Kỹ năng giải quyết vấn đề**: Khả năng bình tĩnh phân tích log hệ thống để tìm ra nguyên nhân gốc rễ của các lỗi kết nối Cloud API.
+## 5. REFLECTION ON INDIVIDUAL SKILL DEVELOPMENT
+- **Professional Skills**: I improved my debugging skills, learned how to write better technical documents, and gained experience in building VS Code extensions.
+- **Soft Skills**: I developed better teamwork, learned how to argue for the best solutions, and became much faster at adapting to new software tools.
 
-## 6. TAKE AWAY (BÀI HỌC KINH NGHIỆM)
-Bài học lớn nhất tôi rút ra được là: "Hiểu đúng về sự khác biệt giữa cấu hình local và hạ tầng thực tế là chìa khóa để vận hành Cloud an toàn". AI là một trợ thủ đắc lực nhưng nó cần được kiểm chứng (Verify) một cách nghiêm ngặt. Nếu có cơ hội thực hiện lại, tôi sẽ phát triển thêm các bộ testcase tự động (Automation Test) để kiểm tra độ tin cậy của Agent trong nhiều tình huống hạ tầng khác nhau. Dự án này đã giúp tôi hình dung rõ nét hơn về tương lai của ngành hạ tầng số khi có sự trợ giúp của AI.
+## 6. TAKE AWAY
+The most important lesson I learned is: "System stability is more important than flashy features." Through testing and recording demos, I realized that no matter how "smart" an AI is, it needs a very solid foundation and strict testing.
+
+If I could do this project again, I would:
+- **Automate Testing Early**: Instead of testing everything by hand, I would build automated tests from day one to save time and be more accurate.
+- **Focus on Security First**: I would suggest looking at security and permissions much earlier in the design phase.
+- **Use Demos to Shape Features**: I would use demo recordings throughout the project to see if the features we are building are actually what a user needs.
+
+This project helped me realize that being the one who tests and "tells the story" of the product is just as important as writing the code itself.
+
